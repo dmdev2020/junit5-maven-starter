@@ -1,6 +1,7 @@
 package com.dmdev.junit.service;
 
 import com.dmdev.junit.dto.User;
+import com.dmdev.junit.paramresolver.UserServiceParamResolver;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.jupiter.api.AfterAll;
@@ -13,9 +14,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("user")
 @TestInstance(Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.DisplayName.class)
+@ExtendWith({
+        UserServiceParamResolver.class
+})
 class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
@@ -40,21 +46,25 @@ class UserServiceTest {
 
     private UserService userService;
 
+    UserServiceTest(TestInfo testInfo) {
+        System.out.println();
+    }
+
     @BeforeAll
     void init() {
         System.out.println("Before all: " + this);
     }
 
     @BeforeEach
-    void prepare() {
+    void prepare(UserService userService) {
         System.out.println("Before each: " + this);
-        userService = new UserService();
+        this.userService = userService;
     }
 
     @Test
     @Order(1)
     @DisplayName("users will be empty if no user added")
-    void usersEmptyIfNoUserAdded() {
+    void usersEmptyIfNoUserAdded(UserService userService) {
         System.out.println("Test 1: " + this);
         var users = userService.getAll();
 
