@@ -145,7 +145,6 @@ class UserServiceTest {
         }
 
         @Test
-
 //    @org.junit.Test(expected = IllegalArgumentException.class)
         void throwExceptionIfUsernameOrPasswordIsNull() {
             assertAll(
