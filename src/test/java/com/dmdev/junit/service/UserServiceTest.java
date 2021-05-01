@@ -151,7 +151,7 @@ class UserServiceTest {
             System.out.println(Thread.currentThread().getName());
             var result = assertTimeoutPreemptively(Duration.ofMillis(200L), () -> {
                 System.out.println(Thread.currentThread().getName());
-                Thread.sleep(300L);
+                Thread.sleep(100L);
                 return userService.login("dummy", IVAN.getPassword());
             });
         }
