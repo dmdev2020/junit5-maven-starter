@@ -47,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith({
         UserServiceParamResolver.class
 })
+//@RunWith()
 class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
