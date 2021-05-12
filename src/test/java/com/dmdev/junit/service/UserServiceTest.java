@@ -1,10 +1,10 @@
 package com.dmdev.junit.service;
 
 import com.dmdev.junit.TestBase;
+import com.dmdev.junit.dao.UserDao;
 import com.dmdev.junit.dto.User;
 import com.dmdev.junit.extension.ConditionalExtension;
 import com.dmdev.junit.extension.PostProcessingExtension;
-import com.dmdev.junit.extension.ThrowableExtension;
 import com.dmdev.junit.extension.UserServiceParamResolver;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsMapContaining;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -53,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         UserServiceParamResolver.class,
         PostProcessingExtension.class,
         ConditionalExtension.class,
-        ThrowableExtension.class
+//        ThrowableExtension.class
 //        GlobalExtension.class
 })
 //@RunWith()
@@ -65,6 +66,7 @@ class UserServiceTest extends TestBase {
 //    @Rule
 //    ExpectedException
 
+    private UserDao userDao;
     private UserService userService;
 
     UserServiceTest(TestInfo testInfo) {
@@ -77,9 +79,27 @@ class UserServiceTest extends TestBase {
     }
 
     @BeforeEach
-    void prepare(UserService userService) {
+    void prepare() {
         System.out.println("Before each: " + this);
-        this.userService = userService;
+        this.userDao = Mockito.mock(UserDao.class);
+        this.userService = new UserService(userDao);
+    }
+
+    @Test
+    void shouldDeleteExistedUser() {
+        userService.add(IVAN);
+//        Mockito.doReturn(true).when(userDao).delete(IVAN.getId());
+//        Mockito.doReturn(true).when(userDao).delete(Mockito.any());
+
+        Mockito.when(userDao.delete(IVAN.getId()))
+                .thenReturn(true)
+                .thenReturn(false);
+
+        var deleteResult = userService.delete(IVAN.getId());
+        System.out.println(userService.delete(IVAN.getId()));
+        System.out.println(userService.delete(IVAN.getId()));
+
+        assertThat(deleteResult).isTrue();
     }
 
     @Test
@@ -149,7 +169,7 @@ class UserServiceTest extends TestBase {
             assertTrue(maybeUser.isEmpty());
         }
 
-//        @Test
+        //        @Test
         @RepeatedTest(value = 5, name = RepeatedTest.LONG_DISPLAY_NAME)
         void loginFailIfUserDoesNotExist(RepetitionInfo repetitionInfo) {
             userService.add(IVAN);
@@ -224,7 +244,7 @@ class UserServiceTest extends TestBase {
                 Arguments.of("Ivan", "123", Optional.of(IVAN)),
                 Arguments.of("Petr", "111", Optional.of(PETR)),
                 Arguments.of("Petr", "dummy", Optional.empty()),
-                Arguments.of( "dummy", "123", Optional.empty())
+                Arguments.of("dummy", "123", Optional.empty())
         );
     }
 }
