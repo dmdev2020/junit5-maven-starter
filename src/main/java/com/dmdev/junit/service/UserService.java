@@ -22,6 +22,7 @@ public class UserService {
     }
 
     public boolean delete(Integer userId) {
+//        Integer userIdLocal = 25;
         return userDao.delete(userId);
     }
 
